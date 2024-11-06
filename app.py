@@ -11,7 +11,7 @@ from streamlit_shap import st_shap
 st.set_page_config(page_title="Predicción de Probabilidad de Empleo", layout="centered")
 
 # Cargar el modelo
-rf = joblib.load('random_forest_model.joblib')
+rf = joblib.load('random_forest_modelSTM.joblib')
 
 st.title("🧑‍💼 Predicción de Probabilidad de Empleo")
 
