@@ -13,7 +13,7 @@ import shap
 st.set_page_config(page_title="Predicción de Probabilidad de Empleo", layout="centered")
 
 # Cargar el modelo
-rf = joblib.load('random_forest_modelSTM.joblib')
+rf = joblib.load('random_forest_model.joblib')
 
 st.title("🧑‍💼 Predicción de Probabilidad de Empleo")
 
@@ -24,7 +24,6 @@ jefehogar = st.selectbox("¿Es usted jefe de hogar?", ("No", "Sí"))
 hombre = st.selectbox("¿Cuál es su género?", ("Mujer", "Hombre"))
 rural = st.selectbox("¿Vive en una zona rural?", ("No", "Sí"))
 HLENGUA = st.selectbox("¿Habla una lengua indígena?", ("No", "Sí"))
-hombrecasado = st.selectbox("¿Es usted un hombre casado?", ("No", "Sí"))
 casado = st.selectbox("¿Está usted casado(a)?", ("No", "Sí"))
 Ident_Indigena = st.selectbox("¿Se identifica como indígena?", ("No", "Sí"))
 
@@ -43,9 +42,11 @@ jefehogar_bin = convert_to_binary(jefehogar)
 hombre_bin = convert_to_binary(hombre)
 rural_bin = convert_to_binary(rural)
 HLENGUA_bin = convert_to_binary(HLENGUA)
-hombrecasado_bin = convert_to_binary(hombrecasado)
 casado_bin = convert_to_binary(casado)
 Ident_Indigena_bin = convert_to_binary(Ident_Indigena)
+
+# Calcular 'hombrecasado' como una combinación de 'hombre' y 'casado'
+hombrecasado_bin = hombre_bin * casado_bin  # Multiplicación lógica (AND)
 
 # Crear el array de características en el orden correcto
 features = np.array([[
@@ -57,9 +58,9 @@ feature_names = ['jefehogar', 'hombre', 'rural', 'ESCOACUM', 'EDAD', 'EDAD2',
                  'HLENGUA', 'hombrecasado', 'casado', 'Ident_Indigena']
 
 # Cargar el explainer de SHAP (cacheado para eficiencia)
-@st.cache(allow_output_mutation=True)
-def load_explainer(model):
-    return shap.TreeExplainer(model)
+@st.cache_resource
+def load_explainer(_model):
+    return shap.TreeExplainer(_model)
 
 explainer = load_explainer(rf)
 
