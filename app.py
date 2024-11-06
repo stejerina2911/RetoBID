@@ -11,7 +11,11 @@ from streamlit_shap import st_shap
 st.set_page_config(page_title="Predicción de Probabilidad de Empleo", layout="centered")
 
 # Cargar el modelo
-rf = joblib.load('random_forest_modelSTM2.joblib')
+@st.cache_resource
+def load_model():
+    return joblib.load('random_forest_model.joblib')
+
+rf = load_model()
 
 st.title("🧑‍💼 Predicción de Probabilidad de Empleo")
 
@@ -55,10 +59,10 @@ features = np.array([[
 feature_names = ['jefehogar', 'hombre', 'rural', 'ESCOACUM', 'EDAD', 'EDAD2',
                  'HLENGUA', 'hombrecasado', 'casado', 'Ident_Indigena']
 
-# Cargar el explainer de SHAP (cacheado para eficiencia)
+# Cargar el explainer de SHAP con model_output='probability'
 @st.cache_resource
 def load_explainer(_model):
-    return shap.TreeExplainer(_model)
+    return shap.TreeExplainer(_model, model_output='probability')
 
 explainer = load_explainer(rf)
 
@@ -70,27 +74,44 @@ if st.button("Calcular probabilidad de empleo"):
     st.subheader(f"🔎 Su probabilidad de tener empleo es: **{probabilidad * 100:.2f}%**")
 
     # Calcular los valores SHAP para la instancia
-    # Calcular los valores SHAP para la instancia
-shap_values = explainer.shap_values(features)
+    shap_values = explainer.shap_values(features)
 
-# Imprimir la información de shap_values
-st.write(f"Tipo de shap_values: {type(shap_values)}")
-
-if isinstance(shap_values, list):
-    st.write(f"Longitud de shap_values (número de clases): {len(shap_values)}")
-    st.write(f"Forma de shap_values[0]: {shap_values[0].shape}")
-    st.write(f"Forma de shap_values[1]: {shap_values[1].shape}")
-else:
+    # Imprimir información de shap_values para depuración
+    st.write("### Depuración:")
+    st.write(f"Tipo de shap_values: {type(shap_values)}")
     st.write(f"Forma de shap_values: {shap_values.shape}")
 
-# Acceder a los valores SHAP para la clase positiva
-if isinstance(shap_values, list) and len(shap_values) > 1:
-    influencia = shap_values[1][0]  # Usar los valores SHAP de la clase 1
-    expected_value = explainer.expected_value[1]
-else:
-    influencia = shap_values[0][0]  # Usar los valores SHAP de la primera clase
-    expected_value = explainer.expected_value
+    # Acceder a los valores SHAP para la clase positiva (clase 1)
+    # y la instancia 0
+    influencia = shap_values[0][:, 1]  # Forma (10,)
 
-# Imprimir la forma de influencia
-st.write(f"Forma de influencia: {influencia.shape}")
+    # Imprimir la forma de influencia
+    st.write(f"Forma de influencia: {influencia.shape}")
 
+    # Ahora las longitudes deben coincidir
+    st.write(f"Longitud de 'feature_names': {len(feature_names)}")
+    st.write(f"Longitud de 'features[0]': {len(features[0])}")
+    st.write(f"Longitud de 'influencia': {len(influencia)}")
+
+    # Crear un DataFrame para los valores SHAP
+    shap_df = pd.DataFrame({
+        'Característica': feature_names,
+        'Valor': features[0],
+        'Influencia': influencia
+    })
+
+    # Ordenar por valor absoluto de SHAP
+    shap_df['Influencia_abs'] = np.abs(shap_df['Influencia'])
+    shap_df = shap_df.sort_values(by='Influencia_abs', ascending=False)
+
+    # Mostrar tabla de influencias
+    st.write("### Factores que más influyen en su predicción:")
+    st.table(shap_df[['Característica', 'Valor', 'Influencia']].head(10))
+
+    # Mostrar gráfico de SHAP values
+    st.write("### Visualización de la influencia de cada factor:")
+    shap.initjs()
+    force_plot = shap.force_plot(explainer.expected_value[1], influencia, features[0], feature_names=feature_names)
+    st_shap(force_plot)
+
+    st.info("Puede ajustar las características y volver a calcular para ver cómo cambia la probabilidad.")
