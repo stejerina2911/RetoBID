@@ -77,9 +77,9 @@ if st.button("Calcular probabilidad de empleo"):
     shap_values = explainer.shap_values(features)
 
     # Imprimir información de shap_values para depuración
-    # st.write("### Depuración:")
-    # st.write(f"Tipo de shap_values: {type(shap_values)}")
-    # st.write(f"Forma de shap_values: {np.array(shap_values).shape}")
+    st.write("### Depuración:")
+    st.write(f"Tipo de shap_values: {type(shap_values)}")
+    st.write(f"Forma de shap_values: {np.array(shap_values).shape}")
 
     # Acceder a los valores SHAP para la clase positiva (clase 1)
     influencia = shap_values[1][0]  # Forma (10,)
