@@ -76,19 +76,11 @@ if st.button("Calcular probabilidad de empleo"):
     # Calcular los valores SHAP para la instancia
     shap_values = explainer.shap_values(features)
 
-    # Imprimir información sobre shap_values
-    st.write("### Depuración:")
-    st.write(f"Tipo de shap_values: {type(shap_values)}")
-    st.write(f"Forma de shap_values: {np.array(shap_values).shape}")
-
-    # Acceder a los valores SHAP para la clase positiva (clase 1) y la instancia 0
-    influencia = shap_values[0][0][:, 1]  # Forma (10,)
+    # Acceder a los valores SHAP para la clase positiva (clase 1)
+    influencia = shap_values[0][:, 1]  # Forma (10,)
 
     # Asignar el valor esperado para la clase positiva
     expected_value = explainer.expected_value[1]
-
-    # Verificar la longitud de influencia
-    st.write(f"Longitud de 'influencia': {len(influencia)}")
 
     # Crear un DataFrame para los valores SHAP
     shap_df = pd.DataFrame({
