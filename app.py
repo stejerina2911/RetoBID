@@ -6,8 +6,6 @@ import pandas as pd
 # Importar librerías para gráficos
 import shap
 from streamlit_shap import st_shap
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 # Configuración de la página
 st.set_page_config(page_title="Predicción de Probabilidad de Empleo", layout="centered")
@@ -15,7 +13,7 @@ st.set_page_config(page_title="Predicción de Probabilidad de Empleo", layout="c
 # Cargar el modelo
 @st.cache_resource
 def load_model():
-    return joblib.load('random_forest_modelSTM2.joblib')
+    return joblib.load('random_forest_model.joblib')
 
 rf = load_model()
 
@@ -61,20 +59,6 @@ features = np.array([[
 feature_names = ['jefehogar', 'hombre', 'rural', 'ESCOACUM', 'EDAD', 'EDAD2',
                  'HLENGUA', 'hombrecasado', 'casado', 'Ident_Indigena']
 
-# Diccionario de nombres amigables
-feature_name_mapping = {
-    'jefehogar': 'Jefe de hogar',
-    'hombre': 'Género masculino',
-    'rural': 'Vive en zona rural',
-    'ESCOACUM': 'Años de educación acumulada',
-    'EDAD': 'Edad',
-    'EDAD2': 'Edad al cuadrado',
-    'HLENGUA': 'Habla lengua indígena',
-    'hombrecasado': 'Hombre casado',
-    'casado': 'Está casado(a)',
-    'Ident_Indigena': 'Se identifica como indígena'
-}
-
 # Cargar el explainer de SHAP
 @st.cache_resource
 def load_explainer(_model):
@@ -93,65 +77,31 @@ if st.button("Calcular probabilidad de empleo"):
     shap_values = explainer.shap_values(features)
 
     # Acceder a los valores SHAP para la clase positiva (clase 1)
-    influencia = shap_values[1][0]
+    influencia = shap_values[0][:, 1]  # Forma (10,)
 
-    # Crear un DataFrame para los valores SHAP con nombres amigables
+    # Asignar el valor esperado para la clase positiva
+    expected_value = explainer.expected_value[1]
+
+    # Crear un DataFrame para los valores SHAP
     shap_df = pd.DataFrame({
-        'Característica': [feature_name_mapping.get(name, name) for name in feature_names],
+        'Característica': feature_names,
         'Valor': features[0],
         'Influencia': influencia
     })
 
-    # Calcular el valor absoluto de las influencias
+    # Ordenar por valor absoluto de SHAP
     shap_df['Influencia_abs'] = np.abs(shap_df['Influencia'])
+    shap_df = shap_df.sort_values(by='Influencia_abs', ascending=False)
 
-    # Calcular el porcentaje de influencia
-    total_influencia_abs = shap_df['Influencia_abs'].sum()
-    shap_df['Influencia_%'] = (shap_df['Influencia_abs'] / total_influencia_abs) * 100
-    shap_df['Influencia_%'] = shap_df['Influencia_%'].round(2)
-
-    # Ordenar por porcentaje de influencia
-    shap_df = shap_df.sort_values(by='Influencia_%', ascending=False)
-
-    # Mostrar tabla de influencias con porcentajes
+    # Mostrar tabla de influencias
     st.write("### Factores que más influyen en su predicción:")
-    st.table(shap_df[['Característica', 'Valor', 'Influencia_%']].head(10))
+    st.table(shap_df[['Característica', 'Valor', 'Influencia']].head(10))
 
-    # Agregar una nota explicativa
-    st.caption("El porcentaje de influencia indica la contribución relativa de cada factor a la predicción, basado en los valores absolutos de influencia.")
-
-    # Crear un gráfico de barras de las influencias en porcentaje
-    fig, ax = plt.subplots()
-    sns.barplot(x='Influencia_%', y='Característica', data=shap_df.head(10), palette='viridis', ax=ax)
-    ax.set_xlabel('Influencia (%)')
-    ax.set_ylabel('Característica')
-    ax.set_title('Influencia de las características en la predicción')
-    st.pyplot(fig)
-
-    # Comparar probabilidades con y sin Identidad Indígena
-    # Probabilidad con Ident_Indigena = 0
-    features_no_indigena = features.copy()
-    features_no_indigena[0][-1] = 0  # Establecer Ident_Indigena a 0
-    prob_no_indigena = rf.predict_proba(features_no_indigena)[0][1]
-
-    # Probabilidad con Ident_Indigena = 1
-    features_si_indigena = features.copy()
-    features_si_indigena[0][-1] = 1  # Establecer Ident_Indigena a 1
-    prob_si_indigena = rf.predict_proba(features_si_indigena)[0][1]
-
-    # Mostrar las probabilidades
-    st.write("### Efecto de la Identidad Indígena en la Probabilidad de Empleo")
-    st.write(f"- **Sin Identidad Indígena:** {prob_no_indigena * 100:.2f}%")
-    st.write(f"- **Con Identidad Indígena:** {prob_si_indigena * 100:.2f}%")
-
-    # Crear un gráfico comparativo
-    probabilities = [prob_no_indigena * 100, prob_si_indigena * 100]
-    labels = ['Sin Identidad Indígena', 'Con Identidad Indígena']
-
-    fig2, ax2 = plt.subplots()
-    ax2.bar(labels, probabilities, color=['blue', 'orange'])
-    ax2.set_ylabel('Probabilidad de Empleo (%)')
-    ax2.set_title('Impacto de la Identidad Indígena en la Probabilidad de Empleo')
-    st.pyplot(fig2)
+    # Mostrar gráfico de SHAP values
+    st.write("### Visualización de la influencia de cada factor:")
+    shap.initjs()
+    force_plot = shap.force_plot(expected_value, influencia, features[0], feature_names=feature_names)
+    st_shap(force_plot)
 
     st.info("Puede ajustar las características y volver a calcular para ver cómo cambia la probabilidad.")
+
