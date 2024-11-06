@@ -4,5 +4,5 @@ numpy
 pandas
 seaborn
 matplotlib
-shap
+shap==0.41.0
 streamlit-shap
