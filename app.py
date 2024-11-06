@@ -11,7 +11,7 @@ from streamlit_shap import st_shap
 st.set_page_config(page_title="Predicción de Probabilidad de Empleo", layout="centered")
 
 # Cargar el modelo
-rf = joblib.load('random_forest_modelSTM.joblib')
+rf = joblib.load('random_forest_model.joblib')
 
 st.title("🧑‍💼 Predicción de Probabilidad de Empleo")
 
@@ -72,36 +72,44 @@ if st.button("Calcular probabilidad de empleo"):
     # Calcular los valores SHAP para la instancia
     shap_values = explainer.shap_values(features)
 
-    # Acceder a los valores SHAP para la instancia
-    influencia = shap_values[0]
+    # Seleccionar los valores SHAP para la clase positiva, si está disponible
+    if isinstance(shap_values, list) and len(shap_values) > 1:
+        influencia = shap_values[1]  # Usar los valores SHAP de la clase 1
+    else:
+        influencia = shap_values[0]  # Usar los valores SHAP de la primera clase
 
     # Asegurarnos de que 'influencia' es un arreglo unidimensional
     if influencia.ndim > 1:
         influencia = influencia.flatten()
 
-    # Mostrar las formas de las variables (opcional, para depuración)
-    st.write(f"Forma de feature_names: {np.array(feature_names).shape}")
-    st.write(f"Forma de features[0]: {features[0].shape}")
-    st.write(f"Forma de influencia: {influencia.shape}")
+    # Depuración: Imprimir las longitudes de las variables
+    st.write("### Depuración: Formas de las Variables")
+    st.write(f"Longitud de 'feature_names': {len(feature_names)}")
+    st.write(f"Longitud de 'features[0]': {len(features[0])}")
+    st.write(f"Longitud de 'influencia': {len(influencia)}")
 
-    # Crear un DataFrame para los valores SHAP
-    shap_df = pd.DataFrame({
-        'Característica': feature_names,
-        'Valor': features[0],
-        'Influencia': influencia
-    })
+    # Crear un DataFrame para los valores SHAP solo si las longitudes coinciden
+    if len(feature_names) == len(features[0]) == len(influencia):
+        shap_df = pd.DataFrame({
+            'Característica': feature_names,
+            'Valor': features[0],
+            'Influencia': influencia
+        })
 
-    # Ordenar por valor absoluto de SHAP
-    shap_df['Influencia_abs'] = np.abs(shap_df['Influencia'])
-    shap_df = shap_df.sort_values(by='Influencia_abs', ascending=False)
+        # Ordenar por valor absoluto de SHAP
+        shap_df['Influencia_abs'] = np.abs(shap_df['Influencia'])
+        shap_df = shap_df.sort_values(by='Influencia_abs', ascending=False)
+        
+        # Mostrar tabla de influencias
+        st.table(shap_df[['Característica', 'Valor', 'Influencia']].head(10))
 
-    # Mostrar tabla de influencias
-    st.table(shap_df[['Característica', 'Valor', 'Influencia']].head(10))
-
-    # Mostrar gráfico de SHAP values
-    st.write("### Visualización de la influencia de cada factor:")
-    shap.initjs()
-    force_plot = shap.force_plot(explainer.expected_value, influencia, features[0], feature_names=feature_names)
-    st_shap(force_plot)
+        # Mostrar gráfico de SHAP values
+        st.write("### Visualización de la influencia de cada factor:")
+        shap.initjs()
+        force_plot = shap.force_plot(explainer.expected_value[1], influencia, features[0], feature_names=feature_names)
+        st_shap(force_plot)
+    else:
+        st.error("Las longitudes de las columnas no coinciden. Verifica el código.")
 
     st.info("Puede ajustar las características y volver a calcular para ver cómo cambia la probabilidad.")
+
