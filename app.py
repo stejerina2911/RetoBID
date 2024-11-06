@@ -80,9 +80,9 @@ if st.button("Calcular probabilidad de empleo"):
         influencia = influencia.flatten()
 
     # Mostrar las formas de las variables (opcional, para depuración)
-    # st.write(f"Forma de feature_names: {np.array(feature_names).shape}")
-    # st.write(f"Forma de features[0]: {features[0].shape}")
-    # st.write(f"Forma de influencia: {influencia.shape}")
+     st.write(f"Forma de feature_names: {np.array(feature_names).shape}")
+     st.write(f"Forma de features[0]: {features[0].shape}")
+     st.write(f"Forma de influencia: {influencia.shape}")
 
     # Crear un DataFrame para los valores SHAP
     shap_df = pd.DataFrame({
