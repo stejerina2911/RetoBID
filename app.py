@@ -70,7 +70,30 @@ if st.button("Calcular probabilidad de empleo"):
     st.subheader(f"🔎 Su probabilidad de tener empleo es: **{probabilidad * 100:.2f}%**")
 
     # Calcular los valores SHAP para la instancia
-    shap_values = explainer.shap_values(features)
+    # Calcular los valores SHAP para la instancia
+shap_values = explainer.shap_values(features)
+
+# Imprimir la información de shap_values
+st.write(f"Tipo de shap_values: {type(shap_values)}")
+
+if isinstance(shap_values, list):
+    st.write(f"Longitud de shap_values (número de clases): {len(shap_values)}")
+    st.write(f"Forma de shap_values[0]: {shap_values[0].shape}")
+    st.write(f"Forma de shap_values[1]: {shap_values[1].shape}")
+else:
+    st.write(f"Forma de shap_values: {shap_values.shape}")
+
+# Acceder a los valores SHAP para la clase positiva
+if isinstance(shap_values, list) and len(shap_values) > 1:
+    influencia = shap_values[1][0]  # Usar los valores SHAP de la clase 1
+    expected_value = explainer.expected_value[1]
+else:
+    influencia = shap_values[0][0]  # Usar los valores SHAP de la primera clase
+    expected_value = explainer.expected_value
+
+# Imprimir la forma de influencia
+st.write(f"Forma de influencia: {influencia.shape}")
+
 
     # Seleccionar los valores SHAP para la clase positiva, si está disponible
     if isinstance(shap_values, list) and len(shap_values) > 1:
