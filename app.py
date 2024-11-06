@@ -81,7 +81,7 @@ if st.button("Calcular probabilidad de empleo"):
     shap_df = pd.DataFrame({
         'Característica': feature_names,
         'Valor': features[0],
-        'Influencia': shap_values[1][0]
+        'Influencia': shap_values[0]
     })
 
     # Ordenar por valor absoluto de SHAP
