@@ -6,3 +6,4 @@ shap
 streamlit-shap
 matplotlib
 ipython
+seaborn
