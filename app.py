@@ -74,13 +74,17 @@ if st.button("Calcular probabilidad de empleo"):
     # Calcular los valores SHAP para la instancia
     shap_values = explainer.shap_values(features)
 
-    # Acceder a los valores SHAP para la clase positiva (clase 1)
-    influencia = shap_values[1][0]  # Para la clase 1, instancia 0
+    # Verificar la forma de shap_values
+    # st.write(f"Tipo de shap_values: {type(shap_values)}")
+    # st.write(f"Forma de shap_values: {shap_values.shape}")
+
+    # Acceder a los valores SHAP para la instancia
+    influencia = shap_values[0]  # Para la instancia 0
 
     # Mostrar los factores que más afectan la predicción
     st.write("### Factores que más influyen en su predicción:")
 
-    # Crear un DataFrame para los SHAP values
+    # Crear un DataFrame para los valores SHAP
     shap_df = pd.DataFrame({
         'Característica': feature_names,
         'Valor': features[0],
@@ -97,6 +101,6 @@ if st.button("Calcular probabilidad de empleo"):
     # Mostrar gráfico de SHAP values
     st.write("### Visualización de la influencia de cada factor:")
     shap.initjs()
-    st_shap(shap.force_plot(explainer.expected_value[1], influencia, features[0], feature_names=feature_names))
+    st_shap(shap.force_plot(explainer.expected_value, influencia, features[0], feature_names=feature_names))
 
     st.info("Puede ajustar las características y volver a calcular para ver cómo cambia la probabilidad.")
