@@ -59,10 +59,10 @@ features = np.array([[
 feature_names = ['jefehogar', 'hombre', 'rural', 'ESCOACUM', 'EDAD', 'EDAD2',
                  'HLENGUA', 'hombrecasado', 'casado', 'Ident_Indigena']
 
-# Cargar el explainer de SHAP con model_output='probability'
+# Cargar el explainer de SHAP sin model_output
 @st.cache_resource
 def load_explainer(_model):
-    return shap.TreeExplainer(_model, model_output='probability')
+    return shap.TreeExplainer(_model)
 
 explainer = load_explainer(rf)
 
@@ -77,21 +77,15 @@ if st.button("Calcular probabilidad de empleo"):
     shap_values = explainer.shap_values(features)
 
     # Imprimir información de shap_values para depuración
-    st.write("### Depuración:")
-    st.write(f"Tipo de shap_values: {type(shap_values)}")
-    st.write(f"Forma de shap_values: {shap_values.shape}")
+    # st.write("### Depuración:")
+    # st.write(f"Tipo de shap_values: {type(shap_values)}")
+    # st.write(f"Forma de shap_values: {np.array(shap_values).shape}")
 
     # Acceder a los valores SHAP para la clase positiva (clase 1)
-    # y la instancia 0
-    influencia = shap_values[0][:, 1]  # Forma (10,)
+    influencia = shap_values[1][0]  # Forma (10,)
 
-    # Imprimir la forma de influencia
-    st.write(f"Forma de influencia: {influencia.shape}")
-
-    # Ahora las longitudes deben coincidir
-    st.write(f"Longitud de 'feature_names': {len(feature_names)}")
-    st.write(f"Longitud de 'features[0]': {len(features[0])}")
-    st.write(f"Longitud de 'influencia': {len(influencia)}")
+    # Verificar la longitud de influencia
+    # st.write(f"Longitud de 'influencia': {len(influencia)}")
 
     # Crear un DataFrame para los valores SHAP
     shap_df = pd.DataFrame({
@@ -115,3 +109,4 @@ if st.button("Calcular probabilidad de empleo"):
     st_shap(force_plot)
 
     st.info("Puede ajustar las características y volver a calcular para ver cómo cambia la probabilidad.")
+
