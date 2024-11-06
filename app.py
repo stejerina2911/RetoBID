@@ -13,7 +13,7 @@ st.set_page_config(page_title="Predicción de Probabilidad de Empleo", layout="c
 # Cargar el modelo
 @st.cache_resource
 def load_model():
-    return joblib.load('random_forest_modelSTM2.joblib')
+    return joblib.load('random_forest_model.joblib')
 
 rf = load_model()
 
@@ -59,7 +59,7 @@ features = np.array([[
 feature_names = ['jefehogar', 'hombre', 'rural', 'ESCOACUM', 'EDAD', 'EDAD2',
                  'HLENGUA', 'hombrecasado', 'casado', 'Ident_Indigena']
 
-# Cargar el explainer de SHAP sin model_output
+# Cargar el explainer de SHAP
 @st.cache_resource
 def load_explainer(_model):
     return shap.TreeExplainer(_model)
@@ -76,16 +76,19 @@ if st.button("Calcular probabilidad de empleo"):
     # Calcular los valores SHAP para la instancia
     shap_values = explainer.shap_values(features)
 
-    # Imprimir información de shap_values para depuración
+    # Imprimir información sobre shap_values
     st.write("### Depuración:")
     st.write(f"Tipo de shap_values: {type(shap_values)}")
     st.write(f"Forma de shap_values: {np.array(shap_values).shape}")
 
-    # Acceder a los valores SHAP para la clase positiva (clase 1)
-    influencia = shap_values[1][0]  # Forma (10,)
+    # Acceder a los valores SHAP para la clase positiva (clase 1) y la instancia 0
+    influencia = shap_values[0][0][:, 1]  # Forma (10,)
+
+    # Asignar el valor esperado para la clase positiva
+    expected_value = explainer.expected_value[1]
 
     # Verificar la longitud de influencia
-    # st.write(f"Longitud de 'influencia': {len(influencia)}")
+    st.write(f"Longitud de 'influencia': {len(influencia)}")
 
     # Crear un DataFrame para los valores SHAP
     shap_df = pd.DataFrame({
@@ -105,8 +108,7 @@ if st.button("Calcular probabilidad de empleo"):
     # Mostrar gráfico de SHAP values
     st.write("### Visualización de la influencia de cada factor:")
     shap.initjs()
-    force_plot = shap.force_plot(explainer.expected_value[1], influencia, features[0], feature_names=feature_names)
+    force_plot = shap.force_plot(expected_value, influencia, features[0], feature_names=feature_names)
     st_shap(force_plot)
 
     st.info("Puede ajustar las características y volver a calcular para ver cómo cambia la probabilidad.")
-
