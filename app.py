@@ -17,7 +17,7 @@ st.set_page_config(
 # Función para cargar el modelo
 @st.cache_resource
 def load_model():
-    return joblib.load('random_forest_modelSTM3.joblib')
+    return joblib.load('random_forest_modelSTM2.joblib')
 
 # Cargar el modelo
 rf = load_model()
@@ -58,27 +58,10 @@ if not st.session_state.app_started:
         {
             'nombre': 'Autor 1',
             'descripcion': 'Carrera: Economía\nSemestre: 8vo',
-            'imagen': 'https://via.placeholder.com/150',  # Reemplaza con el enlace a la foto del autor
+            'imagen': 'https://raw.githubusercontent.com/tu_usuario/tu_repositorio/main/images/autor1.jpg',  # Reemplaza con el enlace a la foto del autor
             'cv': 'https://www.linkedin.com/in/autor1/'   # Reemplaza con el enlace al CV del autor
         },
-        {
-            'nombre': 'Autor 2',
-            'descripcion': 'Carrera: Estadística\nSemestre: 8vo',
-            'imagen': 'https://via.placeholder.com/150',
-            'cv': 'https://www.linkedin.com/in/autor2/'
-        },
-        {
-            'nombre': 'Autor 3',
-            'descripcion': 'Carrera: Sociología\nSemestre: 8vo',
-            'imagen': 'https://via.placeholder.com/150',
-            'cv': 'https://www.linkedin.com/in/autor3/'
-        },
-        {
-            'nombre': 'Autor 4',
-            'descripcion': 'Carrera: Ciencias Políticas\nSemestre: 8vo',
-            'imagen': 'https://via.placeholder.com/150',
-            'cv': 'https://www.linkedin.com/in/autor4/'
-        }
+        # Añade los demás autores...
     ]
 
     # Mostrar información de los autores
@@ -100,12 +83,16 @@ if not st.session_state.app_started:
     with col_button:
         if st.button("Iniciar Aplicación"):
             st.session_state.app_started = True
+            st.experimental_rerun()  # Reintroducido
 
 # --- Aplicación Interactiva ---
-if st.session_state.app_started:
-    # Botón para regresar a la página de inicio
-    if st.button("Regresar a la Página de Inicio"):
-        st.session_state.app_started = False
+elif st.session_state.app_started:
+    # Centrar el botón "Regresar a la Página de Inicio"
+    col_empty1, col_button, col_empty2 = st.columns([1, 2, 1])
+    with col_button:
+        if st.button("Regresar a la Página de Inicio"):
+            st.session_state.app_started = False
+            st.experimental_rerun()  # Reintroducido
 
     # --- Entradas del usuario ---
     st.header("Ingrese sus datos a continuación")
