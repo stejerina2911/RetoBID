@@ -8,136 +8,221 @@ import shap
 from streamlit_shap import st_shap
 
 # Configuración de la página
-st.set_page_config(page_title="Predicción de Probabilidad de Empleo", layout="centered")
+st.set_page_config(
+    page_title="Predicción de Probabilidad de Empleo",
+    layout="centered",
+    initial_sidebar_state="auto"
+)
 
-# Cargar el modelo
+# Función para cargar el modelo
 @st.cache_resource
 def load_model():
-    return joblib.load('random_forest_modelSTM3.joblib')
+    return joblib.load('random_forest_modelSTM2.joblib')
 
+# Cargar el modelo
 rf = load_model()
 
+# Inicializar el estado de la aplicación
+if 'app_started' not in st.session_state:
+    st.session_state.app_started = False
+
+# Título de la aplicación
 st.title("🧑‍💼 Predicción de Probabilidad de Empleo")
 
-st.write("Ingrese sus datos a continuación para calcular la probabilidad de que usted tenga empleo y descubra qué factores influyen más en su situación laboral.")
+# --- Página de inicio ---
+if not st.session_state.app_started:
+    # --- Introducción y Contexto ---
+    st.header("Introducción y Contexto")
+    st.markdown("""
+    La discriminación lingüística hacia los hablantes de lenguas indígenas es una problemática significativa en México. A pesar de ser un país con 68 lenguas indígenas registradas y una riqueza cultural invaluable, los hablantes de estas lenguas enfrentan barreras estructurales y culturales que limitan su acceso a oportunidades laborales.
 
-# Variables binarias (dummies)
-jefehogar = st.selectbox("¿Es usted jefe de hogar?", ("No", "Sí"))
-hombre = st.selectbox("¿Cuál es su género?", ("Mujer", "Hombre"))
-rural = st.selectbox("¿Vive en una zona rural?", ("No", "Sí"))
-HLENGUA = st.selectbox("¿Habla una lengua indígena?", ("No", "Sí"))
-casado = st.selectbox("¿Está usted casado(a)?", ("No", "Sí"))
-Ident_Indigena = st.selectbox("¿Se identifica como indígena?", ("No", "Sí"))
+    Datos del Censo de Población y Vivienda 2020 muestran que la probabilidad de empleo disminuye un 10.98% para los hablantes de lenguas indígenas, incluso después de ajustar por factores sociodemográficos como educación, edad y género. De acuerdo con la Ley General de Derechos Lingüísticos de los Pueblos Indígenas, estas comunidades tienen el derecho de comunicarse en su lengua, sin ninguna forma de restricción en todas sus actividades sociales (Ley General de Derechos Lingüísticos de los Pueblos Indígenas, 2003, Art. 9). Esto significa que el idioma no debería representar una barrera para las oportunidades de empleo de quienes hablan lenguas indígenas. Sin embargo, en la práctica, esta teoría a menudo se aleja de la realidad.
 
-# Variables continuas
-ESCOACUM = st.slider("Años de educación acumulada", min_value=0, max_value=30, value=12)
-EDAD = st.slider("Edad", min_value=15, max_value=100, value=30)
+    Esta exclusión no solo afecta la equidad social, sino que también perpetúa la desigualdad económica, particularmente entre las comunidades indígenas más vulnerables. En este contexto, comprender el impacto de las barreras lingüísticas en la inserción laboral y desarrollar estrategias para mitigar estas disparidades es esencial.
 
-# Calcular EDAD2
-EDAD2 = EDAD ** 2
+    ### Objetivo de la Herramienta Interactiva
+    La calculadora de probabilidad de empleo diseñada como una aplicación tiene como objetivo:
 
-# Convertir entradas a 0 y 1
-def convert_to_binary(value):
-    return 1 if value == "Sí" or value == "Hombre" else 0
+    - **Visualizar** el impacto de factores lingüísticos y sociodemográficos sobre las probabilidades de empleo.
+    - **Fomentar** una fácil comprensión de los resultados del análisis, al presentar de manera interactiva cómo distintas variables (como el bilingüismo o el nivel educativo) afectan las oportunidades laborales.
+    - **Sensibilizar** a los usuarios acerca de la discriminación lingüística y su rol en perpetuar la desigualdad en el mercado laboral mexicano.
 
-jefehogar_bin = convert_to_binary(jefehogar)
-hombre_bin = convert_to_binary(hombre)
-rural_bin = convert_to_binary(rural)
-HLENGUA_bin = convert_to_binary(HLENGUA)
-casado_bin = convert_to_binary(casado)
-Ident_Indigena_bin = convert_to_binary(Ident_Indigena)
+    Mediante esta herramienta, buscamos no solo presentar los resultados de nuestro modelo de análisis, sino también ofrecer una plataforma educativa que conecte estos datos con su contexto real, ayudando a generar conciencia y apoyar en el diseño de políticas públicas más inclusivas.
+    """)
 
-# Calcular 'hombrecasado' como una combinación de 'hombre' y 'casado'
-hombrecasado_bin = hombre_bin * casado_bin  # Multiplicación lógica (AND)
+    # --- Presentación de los Autores ---
+    st.header("Autores del Trabajo")
 
-# Crear el array de características en el orden correcto
-features = np.array([[
-    jefehogar_bin, hombre_bin, rural_bin, ESCOACUM, EDAD, EDAD2,
-    HLENGUA_bin, hombrecasado_bin, casado_bin, Ident_Indigena_bin
-]])
+    # Información de los autores (reemplaza con tus datos y enlaces)
+    autores = [
+        {
+            'nombre': 'Santiago Tejerina',
+            'descripcion': 'Carrera: Economía\nSemestre: 8vo',
+            'imagen': 'https://via.placeholder.com/150',  # Reemplaza con el enlace a la foto del autor
+            'cv': 'https://www.linkedin.com/in/autor1/'   # Reemplaza con el enlace al CV del autor
+        },
+        {
+            'nombre': 'Autor 2',
+            'descripcion': 'Carrera: Estadística\nSemestre: 8vo',
+            'imagen': 'https://via.placeholder.com/150',
+            'cv': 'https://www.linkedin.com/in/autor2/'
+        },
+        {
+            'nombre': 'Autor 3',
+            'descripcion': 'Carrera: Sociología\nSemestre: 8vo',
+            'imagen': 'https://via.placeholder.com/150',
+            'cv': 'https://www.linkedin.com/in/autor3/'
+        },
+        {
+            'nombre': 'Autor 4',
+            'descripcion': 'Carrera: Ciencias Políticas\nSemestre: 8vo',
+            'imagen': 'https://via.placeholder.com/150',
+            'cv': 'https://www.linkedin.com/in/autor4/'
+        }
+    ]
 
-feature_names = ['jefehogar', 'hombre', 'rural', 'ESCOACUM', 'EDAD', 'EDAD2',
-                 'HLENGUA', 'hombrecasado', 'casado', 'Ident_Indigena']
+    # Mostrar información de los autores
+    cols = st.columns(len(autores))
 
-# Diccionario de nombres amigables
-feature_name_mapping = {
-    'jefehogar': 'Jefe de hogar',
-    'hombre': 'Género masculino',
-    'rural': 'Vive en zona rural',
-    'ESCOACUM': 'Años de educación acumulada',
-    'EDAD': 'Edad',
-    'EDAD2': 'Edad al cuadrado',
-    'HLENGUA': 'Habla lengua indígena',
-    'hombrecasado': 'Hombre casado',
-    'casado': 'Está casado(a)',
-    'Ident_Indigena': 'Se identifica como indígena'
-}
+    for idx, col in enumerate(cols):
+        autor = autores[idx]
+        with col:
+            st.image(autor['imagen'], width=150, caption=autor['nombre'])
+            st.markdown(f"**{autor['nombre']}**")
+            st.markdown(autor['descripcion'])
+            st.markdown(f"[Ver CV]({autor['cv']})")
 
-# Cargar el explainer de SHAP
-@st.cache_resource
-def load_explainer(_model):
-    return shap.TreeExplainer(_model)
+    # Botón para iniciar la aplicación
+    st.write("\n")
+    if st.button("Iniciar Aplicación"):
+        st.session_state.app_started = True
+        st.experimental_rerun()
 
-explainer = load_explainer(rf)
+# --- Aplicación Interactiva ---
+if st.session_state.app_started:
+    # Botón para regresar a la página de inicio
+    if st.button("Regresar a la Página de Inicio"):
+        st.session_state.app_started = False
+        st.experimental_rerun()
 
-# Botón para realizar la predicción
-if st.button("Calcular probabilidad de empleo"):
-    # Realizar la predicción
-    probabilidad = rf.predict_proba(features)[0][1]  # Probabilidad de tener empleo
+    # --- Entradas del usuario ---
+    st.header("Ingrese sus datos a continuación")
 
-    st.subheader(f"🔎 Su probabilidad de tener empleo es: **{probabilidad * 100:.2f}%**")
+    st.write("Complete el siguiente formulario para calcular la probabilidad de que usted tenga empleo y descubra qué factores influyen más en su situación laboral.")
 
-    # Calcular los valores SHAP para la instancia
-    shap_values = explainer.shap_values(features)
+    # Variables binarias (dummies)
+    jefehogar = st.selectbox("¿Es usted jefe de hogar?", ("No", "Sí"))
+    hombre = st.selectbox("¿Cuál es su género?", ("Mujer", "Hombre"))
+    rural = st.selectbox("¿Vive en una zona rural?", ("No", "Sí"))
+    HLENGUA = st.selectbox("¿Habla una lengua indígena?", ("No", "Sí"))
+    casado = st.selectbox("¿Está usted casado(a)?", ("No", "Sí"))
+    Ident_Indigena = st.selectbox("¿Se identifica como indígena?", ("No", "Sí"))
 
-    # Acceder a los valores SHAP para la clase positiva (clase 1)
-    if isinstance(shap_values, list):
-        # Para versiones anteriores de SHAP
-        influencia = shap_values[1][0]
-    else:
-        # Para versiones más recientes de SHAP
-        influencia = shap_values[0][:, 1]
+    # Variables continuas
+    ESCOACUM = st.slider("Años de educación acumulada", min_value=0, max_value=30, value=12)
+    EDAD = st.slider("Edad", min_value=15, max_value=100, value=30)
 
-    # Crear una lista de nombres amigables de características
-    user_friendly_feature_names = [feature_name_mapping.get(name, name) for name in feature_names]
+    # Calcular EDAD2
+    EDAD2 = EDAD ** 2
 
-    # Crear un DataFrame para los valores SHAP
-    shap_df = pd.DataFrame({
-        'Característica': user_friendly_feature_names,
-        'Valor': features[0],
-        'Influencia': influencia
-    })
+    # Convertir entradas a 0 y 1
+    def convert_to_binary(value):
+        return 1 if value == "Sí" or value == "Hombre" else 0
 
-    # Redondear los valores de influencia
-    shap_df['Influencia'] = shap_df['Influencia'].round(4)
+    jefehogar_bin = convert_to_binary(jefehogar)
+    hombre_bin = convert_to_binary(hombre)
+    rural_bin = convert_to_binary(rural)
+    HLENGUA_bin = convert_to_binary(HLENGUA)
+    casado_bin = convert_to_binary(casado)
+    Ident_Indigena_bin = convert_to_binary(Ident_Indigena)
 
-    # Calcular el valor absoluto de las influencias
-    shap_df['Influencia_abs'] = np.abs(shap_df['Influencia'])
+    # Calcular 'hombrecasado' como una combinación de 'hombre' y 'casado'
+    hombrecasado_bin = hombre_bin * casado_bin  # Multiplicación lógica (AND)
 
-    # Calcular el porcentaje de influencia
-    total_influencia_abs = shap_df['Influencia_abs'].sum()
-    shap_df['Influencia_%'] = (shap_df['Influencia_abs'] / total_influencia_abs) * 100
-    shap_df['Influencia_%'] = shap_df['Influencia_%'].round(2)
+    # Crear el array de características en el orden correcto
+    features = np.array([[
+        jefehogar_bin, hombre_bin, rural_bin, ESCOACUM, EDAD, EDAD2,
+        HLENGUA_bin, hombrecasado_bin, casado_bin, Ident_Indigena_bin
+    ]])
 
-    # Crear una interpretación para cada característica
-    def interpretar_influencia(row):
-        efecto = 'aumenta' if row['Influencia'] > 0 else 'disminuye'
-        return f"{efecto.capitalize()} tu probabilidad de empleo en un {row['Influencia_%']}%"
+    feature_names = ['jefehogar', 'hombre', 'rural', 'ESCOACUM', 'EDAD', 'EDAD2',
+                     'HLENGUA', 'hombrecasado', 'casado', 'Ident_Indigena']
 
-    shap_df['Interpretación'] = shap_df.apply(interpretar_influencia, axis=1)
+    # Diccionario de nombres amigables
+    feature_name_mapping = {
+        'jefehogar': 'Jefe de hogar',
+        'hombre': 'Género masculino',
+        'rural': 'Vive en zona rural',
+        'ESCOACUM': 'Años de educación acumulada',
+        'EDAD': 'Edad',
+        'EDAD2': 'Edad al cuadrado',
+        'HLENGUA': 'Habla lengua indígena',
+        'hombrecasado': 'Hombre casado',
+        'casado': 'Está casado(a)',
+        'Ident_Indigena': 'Se identifica como indígena'
+    }
 
-    # Ordenar por valor absoluto de influencia
-    shap_df = shap_df.sort_values(by='Influencia_abs', ascending=False)
+    # Cargar el explainer de SHAP
+    @st.cache_resource
+    def load_explainer(_model):
+        return shap.TreeExplainer(_model)
 
-    # Mostrar tabla de influencias con interpretaciones
-    st.write("### Factores que más influyen en su predicción:")
-    st.table(shap_df[['Característica', 'Valor', 'Influencia', 'Interpretación']].head(10))
+    explainer = load_explainer(rf)
 
-    # Mostrar gráfico de SHAP values (opcional)
-    st.write("### Visualización de la influencia de cada factor:")
-    shap.initjs()
-    force_plot = shap.force_plot(explainer.expected_value[1], influencia, features[0], feature_names=user_friendly_feature_names)
-    st_shap(force_plot)
+    # Botón para realizar la predicción
+    if st.button("Calcular probabilidad de empleo"):
+        # Realizar la predicción
+        probabilidad = rf.predict_proba(features)[0][1]  # Probabilidad de tener empleo
 
-    st.info("Puede ajustar las características y volver a calcular para ver cómo cambia la probabilidad.")
+        st.subheader(f"🔎 Su probabilidad de tener empleo es: **{probabilidad * 100:.2f}%**")
+
+        # Calcular los valores SHAP para la instancia
+        shap_values = explainer.shap_values(features)
+
+        # Acceder a los valores SHAP para la clase positiva (clase 1)
+        influencia = shap_values[0][:, 1]  # Instancia 0, todas las características, clase 1
+
+        # Crear una lista de nombres amigables de características
+        user_friendly_feature_names = [feature_name_mapping.get(name, name) for name in feature_names]
+
+        # Crear un DataFrame para los valores SHAP
+        shap_df = pd.DataFrame({
+            'Característica': user_friendly_feature_names,
+            'Valor': features[0],
+            'Influencia': influencia
+        })
+
+        # Redondear los valores de influencia
+        shap_df['Influencia'] = shap_df['Influencia'].round(4)
+
+        # Calcular el valor absoluto de las influencias
+        shap_df['Influencia_abs'] = np.abs(shap_df['Influencia'])
+
+        # Calcular el porcentaje de influencia
+        total_influencia_abs = shap_df['Influencia_abs'].sum()
+        shap_df['Influencia_%'] = (shap_df['Influencia_abs'] / total_influencia_abs) * 100
+        shap_df['Influencia_%'] = shap_df['Influencia_%'].round(2)
+
+        # Crear una interpretación para cada característica
+        def interpretar_influencia(row):
+            efecto = 'aumenta' if row['Influencia'] > 0 else 'disminuye'
+            return f"{efecto.capitalize()} su probabilidad de empleo en un {row['Influencia_%']}%"
+
+        shap_df['Interpretación'] = shap_df.apply(interpretar_influencia, axis=1)
+
+        # Ordenar por valor absoluto de influencia
+        shap_df = shap_df.sort_values(by='Influencia_abs', ascending=False)
+
+        # Mostrar tabla de influencias con interpretaciones
+        st.write("### Factores que más influyen en su predicción:")
+        st.table(shap_df[['Característica', 'Valor', 'Influencia', 'Interpretación']].head(10))
+
+        # Mostrar gráfico de SHAP values
+        st.write("### Visualización de la influencia de cada factor:")
+        shap.initjs()
+        force_plot = shap.force_plot(explainer.expected_value[1], influencia, features[0], feature_names=user_friendly_feature_names)
+        st_shap(force_plot)
+
+        st.info("Puede ajustar las características y volver a calcular para ver cómo cambia la probabilidad.")
+
 
