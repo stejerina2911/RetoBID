@@ -9,7 +9,7 @@ from streamlit_shap import st_shap
 
 # Configuración de la página
 st.set_page_config(
-    page_title="Predicción de Probabilidad de Empleo remunerado",
+    page_title="Predicción de Probabilidad de Empleo",
     layout="centered",
     initial_sidebar_state="auto"
 )
@@ -27,7 +27,7 @@ if 'app_started' not in st.session_state:
     st.session_state.app_started = False
 
 # Título de la aplicación
-st.title("🧑‍💼 Predicción de Probabilidad de Empleo remunerado")
+st.title("🧑‍💼 Predicción de Probabilidad de Empleo")
 
 # --- Página de inicio ---
 if not st.session_state.app_started:
@@ -56,10 +56,10 @@ if not st.session_state.app_started:
     # Información de los autores (reemplaza con tus datos y enlaces)
     autores = [
         {
-            'nombre': 'Santiago Tejerina',
-            'descripcion': 'Carrera: Economía\nSemestre: 7mo',
-            'imagen': 'https://media.licdn.com/dms/image/v2/D4E03AQFpwzaRL1NWfA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1676928415244?e=1738195200&v=beta&t=5nEyBjyvZWoab6voJqRWU7iLyX3h2OYLbjkjixyVUPM',  # Reemplaza con el enlace a la foto del autor
-            'cv': 'https://www.linkedin.com/in/santiago-tejerina-marion/'   # Reemplaza con el enlace al CV del autor
+            'nombre': 'Autor 1',
+            'descripcion': 'Carrera: Economía\nSemestre: 8vo',
+            'imagen': 'https://via.placeholder.com/150',  # Reemplaza con el enlace a la foto del autor
+            'cv': 'https://www.linkedin.com/in/autor1/'   # Reemplaza con el enlace al CV del autor
         },
         {
             'nombre': 'Autor 2',
@@ -91,6 +91,9 @@ if not st.session_state.app_started:
             st.markdown(f"**{autor['nombre']}**")
             st.markdown(autor['descripcion'])
             st.markdown(f"[Ver CV]({autor['cv']})")
+
+    # Espacio adicional
+    st.write("\n")
 
     # Centrar el botón "Iniciar Aplicación"
     col_empty1, col_button, col_empty2 = st.columns([1, 2, 1])
@@ -163,6 +166,10 @@ if st.session_state.app_started:
         'Ident_Indigena': 'Se identifica como indígena'
     }
 
+    # Lista de variables binarias
+    binary_features = ['jefehogar', 'hombre', 'rural', 'HLENGUA', 'hombrecasado', 'casado', 'Ident_Indigena']
+    binary_feature_names = [feature_name_mapping[name] for name in binary_features]
+
     # Cargar el explainer de SHAP
     @st.cache_resource
     def load_explainer(_model):
@@ -192,6 +199,15 @@ if st.session_state.app_started:
             'Valor': features[0],
             'Influencia': influencia
         })
+
+        # Mapear los valores de las variables binarias a 'Sí' o 'No'
+        def map_binary_value(row):
+            if row['Característica'] in binary_feature_names:
+                return 'Sí' if row['Valor'] == 1 else 'No'
+            else:
+                return row['Valor']
+
+        shap_df['Valor'] = shap_df.apply(map_binary_value, axis=1)
 
         # Redondear los valores de influencia
         shap_df['Influencia'] = shap_df['Influencia'].round(4)
@@ -225,5 +241,4 @@ if st.session_state.app_started:
         st_shap(force_plot)
 
         st.info("Puede ajustar las características y volver a calcular para ver cómo cambia la probabilidad.")
-
 
