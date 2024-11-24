@@ -75,8 +75,8 @@ if not st.session_state.app_started:
         },
         {
             'nombre': 'Mauricio Bernal Cisneros',
-            'descripcion': 'Carrera: Ciencias Políticas\nSemestre: 8vo',
-            'imagen': 'https://media.licdn.com/dms/image/v2/D4E03AQHCHJVlWnkPtg/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1661352340340?e=1738195200&v=beta&t=6j9cnlmaMHDKpyOVbBDrUMg3UGFJYd4IWqZq30jDQKc',
+            'descripcion': 'Carrera: Economía\nSemestre: 7mo',
+            'imagen': 'https://media.licdn.com/dms/image/v2/D5603AQGXNPSbFdvbUA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1732419327764?e=1738195200&v=beta&t=aGNaCGqnRPsmgBoScbAYafattDyUsC0jApq4cs37boQ',
             'cv': 'https://www.linkedin.com/in/mauricio-bernal-cisneros-138a88249/'
         }
     ]
