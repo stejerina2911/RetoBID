@@ -104,6 +104,9 @@ if not st.session_state.app_started:
 
 # --- Aplicación Interactiva ---
 if st.session_state.app_started:
+    # Botón para regresar a la página de inicio
+    if st.button("Regresar a la Página de Inicio"):
+        st.session_state.app_started = False
 
 
     # --- Entradas del usuario ---
