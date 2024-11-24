@@ -13,7 +13,7 @@ st.set_page_config(page_title="Predicción de Probabilidad de Empleo", layout="c
 # Cargar el modelo
 @st.cache_resource
 def load_model():
-    return joblib.load('random_forest_modelSTM2.joblib')
+    return joblib.load('random_forest_modelSTM3.joblib')
 
 rf = load_model()
 
