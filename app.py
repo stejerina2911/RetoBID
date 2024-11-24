@@ -17,7 +17,7 @@ st.set_page_config(
 # Función para cargar el modelo
 @st.cache_resource
 def load_model():
-    return joblib.load('random_forest_modelSTM2.joblib')
+    return joblib.load('random_forest_modelSTM3.joblib')
 
 # Cargar el modelo
 rf = load_model()
@@ -57,9 +57,9 @@ if not st.session_state.app_started:
     autores = [
         {
             'nombre': 'Santiago Tejerina',
-            'descripcion': 'Carrera: Economía\nSemestre: 8vo',
-            'imagen': 'https://via.placeholder.com/150',  # Reemplaza con el enlace a la foto del autor
-            'cv': 'https://www.linkedin.com/in/autor1/'   # Reemplaza con el enlace al CV del autor
+            'descripcion': 'Carrera: Economía\nSemestre: 7mo',
+            'imagen': 'https://media.licdn.com/dms/image/v2/D4E03AQFpwzaRL1NWfA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1676928415244?e=1738195200&v=beta&t=5nEyBjyvZWoab6voJqRWU7iLyX3h2OYLbjkjixyVUPM',  # Reemplaza con el enlace a la foto del autor
+            'cv': 'https://www.linkedin.com/in/santiago-tejerina-marion/'   # Reemplaza con el enlace al CV del autor
         },
         {
             'nombre': 'Autor 2',
