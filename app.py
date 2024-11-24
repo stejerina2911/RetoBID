@@ -9,7 +9,7 @@ from streamlit_shap import st_shap
 
 # Configuración de la página
 st.set_page_config(
-    page_title="Predicción de Probabilidad de Empleo",
+    page_title="Predicción de Probabilidad de Empleo remunerado",
     layout="centered",
     initial_sidebar_state="auto"
 )
@@ -27,7 +27,7 @@ if 'app_started' not in st.session_state:
     st.session_state.app_started = False
 
 # Título de la aplicación
-st.title("🧑‍💼 Predicción de Probabilidad de Empleo")
+st.title("🧑‍💼 Predicción de Probabilidad de Empleo remunerado")
 
 # --- Página de inicio ---
 if not st.session_state.app_started:
@@ -92,11 +92,12 @@ if not st.session_state.app_started:
             st.markdown(autor['descripcion'])
             st.markdown(f"[Ver CV]({autor['cv']})")
 
-    # Botón para iniciar la aplicación
-    st.write("\n")
-    if st.button("Iniciar Aplicación"):
-        st.session_state.app_started = True
-        st.experimental_rerun()
+    # Centrar el botón "Iniciar Aplicación"
+    col_empty1, col_button, col_empty2 = st.columns([1, 2, 1])
+    with col_button:
+        if st.button("Iniciar Aplicación"):
+            st.session_state.app_started = True
+            st.experimental_rerun()
 
 # --- Aplicación Interactiva ---
 if st.session_state.app_started:
