@@ -56,28 +56,28 @@ if not st.session_state.app_started:
     # Información de los autores (reemplaza con tus datos y enlaces)
     autores = [
         {
-            'nombre': 'Autor 1',
-            'descripcion': 'Carrera: Economía\nSemestre: 8vo',
-            'imagen': 'https://via.placeholder.com/150',  # Reemplaza con el enlace a la foto del autor
-            'cv': 'https://www.linkedin.com/in/autor1/'   # Reemplaza con el enlace al CV del autor
+            'nombre': 'Santiago Tejerina Marion',
+            'descripcion': 'Carrera: Economía\nSemestre: 7mo',
+            'imagen': 'https://media.licdn.com/dms/image/v2/D4E03AQFpwzaRL1NWfA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1676928415244?e=1738195200&v=beta&t=5nEyBjyvZWoab6voJqRWU7iLyX3h2OYLbjkjixyVUPM',  # Reemplaza con el enlace a la foto del autor
+            'cv': 'https://www.linkedin.com/in/santiago-tejerina-marion/'   # Reemplaza con el enlace al CV del autor
         },
         {
-            'nombre': 'Autor 2',
-            'descripcion': 'Carrera: Estadística\nSemestre: 8vo',
-            'imagen': 'https://via.placeholder.com/150',
-            'cv': 'https://www.linkedin.com/in/autor2/'
+            'nombre': 'Uriel Alejandro Zavala Arrambide',
+            'descripcion': 'Carrera: Economía\nSemestre: 7mo',
+            'imagen': 'https://media.licdn.com/dms/image/v2/D4E03AQFYUiG7AkIKTw/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1731301872073?e=1738195200&v=beta&t=ByKBe3tiowftTvXOWUlFxfTDQG2g4V-rg0DQutlguLc',
+            'cv': 'https://www.linkedin.com/in/uriel-zavala/'
         },
         {
-            'nombre': 'Autor 3',
-            'descripcion': 'Carrera: Sociología\nSemestre: 8vo',
-            'imagen': 'https://via.placeholder.com/150',
-            'cv': 'https://www.linkedin.com/in/autor3/'
+            'nombre': 'Edgar Karel Martínez Mendoza',
+            'descripcion': 'Carrera: Economía\nSemestre: 7mo',
+            'imagen': 'https://media.licdn.com/dms/image/v2/D5603AQGaism3IoxZSA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1718310623791?e=1738195200&v=beta&t=1Zlu0tRymm1bTUI_LC9SAP6Kt3QzkQSOTgnSxKzXedM',
+            'cv': 'https://www.linkedin.com/in/edgar-karel-mart%C3%ADnez-mendoza-80a14b259/'
         },
         {
-            'nombre': 'Autor 4',
+            'nombre': 'Mauricio Bernal Cisneros',
             'descripcion': 'Carrera: Ciencias Políticas\nSemestre: 8vo',
-            'imagen': 'https://via.placeholder.com/150',
-            'cv': 'https://www.linkedin.com/in/autor4/'
+            'imagen': 'https://media.licdn.com/dms/image/v2/D4E03AQHCHJVlWnkPtg/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1661352340340?e=1738195200&v=beta&t=6j9cnlmaMHDKpyOVbBDrUMg3UGFJYd4IWqZq30jDQKc',
+            'cv': 'https://www.linkedin.com/in/mauricio-bernal-cisneros-138a88249/'
         }
     ]
 
@@ -90,7 +90,7 @@ if not st.session_state.app_started:
             st.image(autor['imagen'], width=150, caption=autor['nombre'])
             st.markdown(f"**{autor['nombre']}**")
             st.markdown(autor['descripcion'])
-            st.markdown(f"[Ver CV]({autor['cv']})")
+            st.markdown(f"[Ver Linkedin]({autor['cv']})")
 
     # Espacio adicional
     st.write("\n")
