@@ -34,7 +34,20 @@ if not st.session_state.app_started:
     # --- Introducción y Contexto ---
     st.header("Introducción y Contexto")
     st.markdown("""
-    *[Aquí va tu texto de introducción y contexto]*
+    La discriminación lingüística hacia los hablantes de lenguas indígenas es una problemática significativa en México. A pesar de ser un país con 68 lenguas indígenas registradas y una riqueza cultural invaluable, los hablantes de estas lenguas enfrentan barreras estructurales y culturales que limitan su acceso a oportunidades laborales.
+
+    Datos del Censo de Población y Vivienda 2020 muestran que la probabilidad de empleo disminuye un 10.98% para los hablantes de lenguas indígenas, incluso después de ajustar por factores sociodemográficos como educación, edad y género. De acuerdo con la Ley General de Derechos Lingüísticos de los Pueblos Indígenas, estas comunidades tienen el derecho de comunicarse en su lengua, sin ninguna forma de restricción en todas sus actividades sociales (Ley General de Derechos Lingüísticos de los Pueblos Indígenas, 2003, Art. 9). Esto significa que el idioma no debería representar una barrera para las oportunidades de empleo de quienes hablan lenguas indígenas. Sin embargo, en la práctica, esta teoría a menudo se aleja de la realidad.
+
+    Esta exclusión no solo afecta la equidad social, sino que también perpetúa la desigualdad económica, particularmente entre las comunidades indígenas más vulnerables. En este contexto, comprender el impacto de las barreras lingüísticas en la inserción laboral y desarrollar estrategias para mitigar estas disparidades es esencial.
+
+    ### Objetivo de la Herramienta Interactiva
+    La calculadora de probabilidad de empleo diseñada como una aplicación tiene como objetivo:
+
+    - **Visualizar** el impacto de factores lingüísticos y sociodemográficos sobre las probabilidades de empleo.
+    - **Fomentar** una fácil comprensión de los resultados del análisis, al presentar de manera interactiva cómo distintas variables (como el bilingüismo o el nivel educativo) afectan las oportunidades laborales.
+    - **Sensibilizar** a los usuarios acerca de la discriminación lingüística y su rol en perpetuar la desigualdad en el mercado laboral mexicano.
+
+    Mediante esta herramienta, buscamos no solo presentar los resultados de nuestro modelo de análisis, sino también ofrecer una plataforma educativa que conecte estos datos con su contexto real, ayudando a generar conciencia y apoyar en el diseño de políticas públicas más inclusivas.
     """)
 
     # --- Presentación de los Autores ---
@@ -42,7 +55,30 @@ if not st.session_state.app_started:
 
     # Información de los autores (reemplaza con tus datos y enlaces)
     autores = [
-        # Tu lista de autores
+        {
+            'nombre': 'Autor 1',
+            'descripcion': 'Carrera: Economía\nSemestre: 8vo',
+            'imagen': 'https://via.placeholder.com/150',  # Reemplaza con el enlace a la foto del autor
+            'cv': 'https://www.linkedin.com/in/autor1/'   # Reemplaza con el enlace al CV del autor
+        },
+        {
+            'nombre': 'Autor 2',
+            'descripcion': 'Carrera: Estadística\nSemestre: 8vo',
+            'imagen': 'https://via.placeholder.com/150',
+            'cv': 'https://www.linkedin.com/in/autor2/'
+        },
+        {
+            'nombre': 'Autor 3',
+            'descripcion': 'Carrera: Sociología\nSemestre: 8vo',
+            'imagen': 'https://via.placeholder.com/150',
+            'cv': 'https://www.linkedin.com/in/autor3/'
+        },
+        {
+            'nombre': 'Autor 4',
+            'descripcion': 'Carrera: Ciencias Políticas\nSemestre: 8vo',
+            'imagen': 'https://via.placeholder.com/150',
+            'cv': 'https://www.linkedin.com/in/autor4/'
+        }
     ]
 
     # Mostrar información de los autores
@@ -64,16 +100,19 @@ if not st.session_state.app_started:
     with col_button:
         if st.button("Iniciar Aplicación"):
             st.session_state.app_started = True
-            # st.experimental_rerun()  # Eliminado
+            st.experimental_rerun()
 
 # --- Aplicación Interactiva ---
 if st.session_state.app_started:
+    # Botón para regresar a la página de inicio
+    if st.button("Regresar a la Página de Inicio"):
+        st.session_state.app_started = False
+        st.experimental_rerun()
 
     # --- Entradas del usuario ---
     st.header("Ingrese sus datos a continuación")
 
     st.write("Complete el siguiente formulario para calcular la probabilidad de que usted tenga empleo y descubra qué factores influyen más en su situación laboral.")
-
 
     # Variables binarias (dummies)
     jefehogar = st.selectbox("¿Es usted jefe de hogar?", ("No", "Sí"))
