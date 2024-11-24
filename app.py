@@ -59,6 +59,20 @@ features = np.array([[
 feature_names = ['jefehogar', 'hombre', 'rural', 'ESCOACUM', 'EDAD', 'EDAD2',
                  'HLENGUA', 'hombrecasado', 'casado', 'Ident_Indigena']
 
+# Diccionario de nombres amigables
+feature_name_mapping = {
+    'jefehogar': 'Jefe de hogar',
+    'hombre': 'Género masculino',
+    'rural': 'Vive en zona rural',
+    'ESCOACUM': 'Años de educación acumulada',
+    'EDAD': 'Edad',
+    'EDAD2': 'Edad al cuadrado',
+    'HLENGUA': 'Habla lengua indígena',
+    'hombrecasado': 'Hombre casado',
+    'casado': 'Está casado(a)',
+    'Ident_Indigena': 'Se identifica como indígena'
+}
+
 # Cargar el explainer de SHAP
 @st.cache_resource
 def load_explainer(_model):
@@ -77,30 +91,52 @@ if st.button("Calcular probabilidad de empleo"):
     shap_values = explainer.shap_values(features)
 
     # Acceder a los valores SHAP para la clase positiva (clase 1)
-    influencia = shap_values[0][:, 1]  # Forma (10,)
+    if isinstance(shap_values, list):
+        # Para versiones anteriores de SHAP
+        influencia = shap_values[1][0]
+    else:
+        # Para versiones más recientes de SHAP
+        influencia = shap_values[0][:, 1]
 
-    # Asignar el valor esperado para la clase positiva
-    expected_value = explainer.expected_value[1]
+    # Crear una lista de nombres amigables de características
+    user_friendly_feature_names = [feature_name_mapping.get(name, name) for name in feature_names]
 
     # Crear un DataFrame para los valores SHAP
     shap_df = pd.DataFrame({
-        'Característica': feature_names,
+        'Característica': user_friendly_feature_names,
         'Valor': features[0],
         'Influencia': influencia
     })
 
-    # Ordenar por valor absoluto de SHAP
+    # Redondear los valores de influencia
+    shap_df['Influencia'] = shap_df['Influencia'].round(4)
+
+    # Calcular el valor absoluto de las influencias
     shap_df['Influencia_abs'] = np.abs(shap_df['Influencia'])
+
+    # Calcular el porcentaje de influencia
+    total_influencia_abs = shap_df['Influencia_abs'].sum()
+    shap_df['Influencia_%'] = (shap_df['Influencia_abs'] / total_influencia_abs) * 100
+    shap_df['Influencia_%'] = shap_df['Influencia_%'].round(2)
+
+    # Crear una interpretación para cada característica
+    def interpretar_influencia(row):
+        efecto = 'aumenta' if row['Influencia'] > 0 else 'disminuye'
+        return f"{efecto.capitalize()} tu probabilidad de empleo en un {row['Influencia_%']}%"
+
+    shap_df['Interpretación'] = shap_df.apply(interpretar_influencia, axis=1)
+
+    # Ordenar por valor absoluto de influencia
     shap_df = shap_df.sort_values(by='Influencia_abs', ascending=False)
 
-    # Mostrar tabla de influencias
+    # Mostrar tabla de influencias con interpretaciones
     st.write("### Factores que más influyen en su predicción:")
-    st.table(shap_df[['Característica', 'Valor', 'Influencia']].head(10))
+    st.table(shap_df[['Característica', 'Valor', 'Influencia', 'Interpretación']].head(10))
 
-    # Mostrar gráfico de SHAP values
+    # Mostrar gráfico de SHAP values (opcional)
     st.write("### Visualización de la influencia de cada factor:")
     shap.initjs()
-    force_plot = shap.force_plot(expected_value, influencia, features[0], feature_names=feature_names)
+    force_plot = shap.force_plot(explainer.expected_value[1], influencia, features[0], feature_names=user_friendly_feature_names)
     st_shap(force_plot)
 
     st.info("Puede ajustar las características y volver a calcular para ver cómo cambia la probabilidad.")
