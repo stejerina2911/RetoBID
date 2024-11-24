@@ -100,14 +100,12 @@ if not st.session_state.app_started:
     with col_button:
         if st.button("Iniciar Aplicación"):
             st.session_state.app_started = True
-            st.experimental_rerun()
 
 # --- Aplicación Interactiva ---
 if st.session_state.app_started:
     # Botón para regresar a la página de inicio
     if st.button("Regresar a la Página de Inicio"):
         st.session_state.app_started = False
-        st.experimental_rerun()
 
     # --- Entradas del usuario ---
     st.header("Ingrese sus datos a continuación")
