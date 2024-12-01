@@ -70,7 +70,7 @@ if not st.session_state.app_started:
         {
             'nombre': 'Edgar Karel Martínez Mendoza',
             'descripcion': 'Carrera: Economía\nSemestre: 7mo',
-            'imagen': 'https://media.licdn.com/dms/image/v2/D5603AQG6f787eTDx-g/profile-displayphoto-shrink_400_400/B56ZN6RvJMGwAk-/0/1732923290996?e=1738800000&v=beta&t=jWjjY56GZ_-vbeASuvxJF4Q5kU9nb2g76-SbBA2kkxw',
+            'imagen': 'https://media.licdn.com/dms/image/v2/D4E03AQFpwzaRL1NWfA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1676928415244?e=1738195200&v=beta&t=5nEyBjyvZWoab6voJqRWU7iLyX3h2OYLbjkjixyVUPM',
             'cv': 'https://www.linkedin.com/in/edgar-karel-mart%C3%ADnez-mendoza-80a14b259/'
         },
         {
